@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Fotos de {{ user.username }}{% endblock %}
+
+{% block content %}
+<h2>Fotos de {{ user.username }}</h2>
+
+<h3>Fotos</h3>
+{% for photo in photos %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">{{ photo.title }}</h5>
+            <img src="data:image/jpeg;base64,{{ photo.image }}" class="img-fluid" alt="Foto">
+
+            <p class="card-text">Likes: {{ photo.likes|length }}</p>
+            <form method="POST" action="{{ url_for('like', photo_id=photo._id) }}">
+                <button type="submit" class="btn btn-outline-primary">Like</button>
+            </form>
+            <h6>Comentarios</h6>
+            {% for comment in photo.comments %}
+                <p><strong>{{ comment.username }}</strong>: {{ comment.comment }}</p>
+            {% endfor %}
+            {% if 'username' in session %}
+                <form method="POST" action="{{ url_for('comment', photo_id=photo._id) }}">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="comment" placeholder="Añadir un comentario" required>
+                    </div>
+                    <button type="submit" class="btn btn-outline-secondary">Comentar</button>
+                </form>
+            {% else %}
+                <p><a href="{{ url_for('login') }}">Inicia sesión</a> para comentar.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}

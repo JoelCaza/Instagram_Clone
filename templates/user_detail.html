@@ -10,7 +10,8 @@
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">{{ photo.title }}</h5>
-            <img src="data:image/jpeg;base64,{{ photo.image }}" class="img-fluid" alt="Foto">
+            <img src="data:image/jpeg;base64,{{ convert_image_to_base64(photo.image) }}" class="img-fluid" alt="Foto">
+
 
             <p class="card-text">Likes: {{ photo.likes|length }}</p>
             <form method="POST" action="{{ url_for('like', photo_id=photo._id) }}">

@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 import bcrypt
 from config import get_db
 from bson.objectid import ObjectId
+import base64
 
 app = Flask(__name__)
 app.secret_key = '123'  # Cambia esto por una clave secreta segura
@@ -94,7 +95,7 @@ def profile(username):
 
     photos = list(photos_collection.find({'username': username}))
 
-    return render_template('profile.html', username=username, photos=photos)
+    return render_template('profile.html', username=username, photos=photos,convert_image_to_base64=convert_image_to_base64)
 
 @app.route('/like/<photo_id>', methods=['POST'])
 def like(photo_id):
@@ -145,7 +146,13 @@ def user_detail(username):
 
     photos = list(photos_collection.find({'username': username}))
 
-    return render_template('user_detail.html', user=user, photos=photos)
+    return render_template('user_detail.html', user=user, photos=photos, convert_image_to_base64=convert_image_to_base64)
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
+import base64
+
+def convert_image_to_base64(image_data):
+    return base64.b64encode(image_data).decode('utf-8')
+

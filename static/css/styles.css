@@ -151,3 +151,8 @@ form {
     padding: 20px;
     margin-bottom: 20px;
 }
+.img-fluid {
+    max-width: 100%; /* Ajusta el tamaño máximo del ancho */
+    max-height: 300px; /* Establece un tamaño máximo de altura, ajustable según tus necesidades */
+    border-radius: 5px;
+}

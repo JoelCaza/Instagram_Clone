@@ -158,3 +158,19 @@ import base64
 def convert_image_to_base64(image_data):
     return base64.b64encode(image_data).decode('utf-8')
 
+@app.route('/delete_profile/<username>', methods=['POST'])
+def delete_profile(username):
+    if 'username' not in session or session['username'] != username:
+        flash('No tienes permiso para eliminar este perfil', 'danger')
+        return redirect(url_for('home'))
+
+    # Eliminar usuario de la base de datos
+    users_collection.delete_one({'username': username})
+    # Eliminar todas las fotos del usuario de la base de datos
+    photos_collection.delete_many({'username': username})
+    # Otras acciones de limpieza si es necesario
+
+    # Limpiar la sesión
+    session.pop('username', None)
+    flash('Perfil eliminado correctamente', 'success')
+    return redirect(url_for('home'))

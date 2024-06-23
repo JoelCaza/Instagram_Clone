@@ -37,5 +37,10 @@
             {% endif %}
         </div>
     </div>
+    {% if session.username == username %}
+    <form method="POST" action="{{ url_for('delete_profile', username=username) }}">
+        <button type="submit" class="btn btn-danger">Eliminar perfil</button>
+    </form>
+    {% endif %}
 {% endfor %}
 {% endblock %}

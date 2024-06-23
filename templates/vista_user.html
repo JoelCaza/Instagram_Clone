@@ -10,10 +10,8 @@
         <div class="col-md-8">
             <h2>Publicaciones Recientes</h2>
             <!-- Aquí puedes colocar tu contenido actual de publicaciones o cualquier otro contenido -->
-            
             {% for post in posts %}
                 <div class="card mb-3">
-                    <img src="{{ url_for('static', filename=post.image) }}" class="card-img-top" alt="...">
                     <div class="card-body">
                         <h5 class="card-title">{{ post.title }}</h5>
                         <p class="card-text">{{ post.content }}</p>
@@ -23,7 +21,8 @@
             {% endfor %}
         </div>
         <div class="col-md-4">
-            <h2>Perfiles de Usuarios</h2>
+            <h2>Lista de amigos</h2>
+            
             <ul class="profiles-list">
                 {% for user in users %}
                     <li>

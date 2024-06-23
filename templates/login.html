@@ -1,30 +1,25 @@
 {% extends "base.html" %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Iniciar Sesión - InstaClone{% endblock %}
 
 {% block content %}
 <div class="container">
-    
-    {% if users %}
-    <h2>Usuarios Registrados</h2>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Nombre de Usuario</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
-            <tr>
-                <td>{{ user.username }}</td>
-                <td>
-                    <a href="{{ url_for('user_detail', username=user.username) }}" class="btn btn-info">Ver Fotos</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% endif %}
+    <h2>Iniciar Sesión</h2>
+    <form method="POST" action="{{ url_for('login') }}">
+        <!-- Campo de usuario -->
+        <div class="form-group">
+            <label for="username">Usuario</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        
+        <!-- Campo de contraseña -->
+        <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        
+        <!-- Botón de iniciar sesión -->
+        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+    </form>
 </div>
 {% endblock %}

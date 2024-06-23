@@ -3,6 +3,8 @@ import bcrypt
 from config import get_db
 from bson.objectid import ObjectId
 import base64
+from werkzeug.security import check_password_hash
+
 
 app = Flask(__name__)
 app.secret_key = '123'  # Cambia esto por una clave secreta segura
@@ -37,6 +39,8 @@ def register():
     
     return render_template('register.html')
 
+# app.py
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -48,12 +52,17 @@ def login():
         if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
             session['username'] = username
             flash('Login exitoso', 'success')
-            users = list(users_collection.find())  # Obtener la lista de usuarios registrados
-            return render_template('login.html', users=users)  # Pasar la lista de usuarios a login.html
+
+            # Obtener datos necesarios para la vista de usuario
+            posts = list(photos_collection.find().limit(6))  # Ejemplo de obtención de publicaciones
+            users = list(users_collection.find().limit(6))  # Ejemplo de obtención de usuarios
+
+            return render_template('vista_user.html', posts=posts, users=users)
 
         flash('Usuario o contraseña incorrectos', 'danger')
         return redirect(url_for('login'))
 
+    # Si es un GET, mostrar el formulario de login
     return render_template('login.html')
 
 

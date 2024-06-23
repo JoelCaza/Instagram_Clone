@@ -156,3 +156,27 @@ form {
     max-height: 300px; /* Establece un tamaño máximo de altura, ajustable según tus necesidades */
     border-radius: 5px;
 }
+/* En styles.css */
+.profiles-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-around; /* Ajusta el espacio entre perfiles */
+}
+
+.profiles-list li {
+    text-align: center;
+}
+
+.profile-image {
+    width: 100px; /* Ajusta el tamaño de las imágenes de perfil */
+    height: 100px; /* Ajusta el tamaño de las imágenes de perfil */
+    border-radius: 50%; /* Hace las imágenes redondas */
+    margin-bottom: 10px; /* Espacio entre la imagen y el nombre */
+}
+
+.profile-name {
+    margin: 0;
+    font-size: 14px;
+    color: #262626;
+}

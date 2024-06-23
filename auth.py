@@ -48,12 +48,14 @@ def login():
         if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
             session['username'] = username
             flash('Login exitoso', 'success')
-            return redirect(url_for('home'))
+            users = list(users_collection.find())  # Obtener la lista de usuarios registrados
+            return render_template('login.html', users=users)  # Pasar la lista de usuarios a login.html
 
         flash('Usuario o contraseña incorrectos', 'danger')
         return redirect(url_for('login'))
 
     return render_template('login.html')
+
 
 @app.route('/logout')
 def logout():

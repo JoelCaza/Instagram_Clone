@@ -10,47 +10,52 @@
 {% endif %}
 
 <h3>Fotos</h3>
-{% for photo in photos %}
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">{{ photo.title }}</h5>
-            <img src="data:image/jpeg;base64,{{ convert_image_to_base64(photo.image) }}" class="img-fluid" alt="Foto">
+<div class="row">
+    {% for photo in photos %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ photo.title }}</h5>
+                    <img src="data:image/jpeg;base64,{{ convert_image_to_base64(photo.image) }}" class="img-fluid" alt="Foto">
 
-            <p class="card-text">Likes: <span class="like-count">{{ photo.likes|length }}</span></p>
-            {% if session.username %}
-                {% if session.username in photo.likes_users %}
-                    <form method="POST" action="{{ url_for('unlike', photo_id=photo._id) }}" class="like-form">
-                        <button type="submit" class="btn btn-outline-primary">Unlike</button>
-                    </form>
-                {% else %}
-                    <form method="POST" action="{{ url_for('like', photo_id=photo._id) }}" class="like-form">
-                        <button type="submit" class="btn btn-outline-primary">Like</button>
-                    </form>
-                {% endif %}
-            {% else %}
-                <p><a href="{{ url_for('login') }}">Inicia sesión</a> para dar like.</p>
-            {% endif %}
-            
-            <button class="btn btn-outline-secondary toggle-comments">Ver comentarios</button>
-            <div class="comments-section" style="display: none;">
-                <h6>Comentarios</h6>
-                {% for comment in photo.comments %}
-                    <p><strong>{{ comment.username }}</strong>: {{ comment.comment }}</p>
-                {% endfor %}
-                {% if 'username' in session %}
-                    <form method="POST" action="{{ url_for('comment', photo_id=photo._id) }}">
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="comment" placeholder="Añadir un comentario" required>
-                        </div>
-                        <button type="submit" class="btn btn-outline-secondary">Comentar</button>
-                    </form>
-                {% else %}
-                    <p><a href="{{ url_for('login') }}">Inicia sesión</a> para comentar.</p>
-                {% endif %}
+                    <p class="card-text">Likes: <span class="like-count">{{ photo.likes|length }}</span></p>
+                    {% if session.username %}
+                        {% if session.username in photo.likes_users %}
+                            <form method="POST" action="{{ url_for('unlike', photo_id=photo._id) }}" class="like-form">
+                                <button type="submit" class="btn btn-outline-primary">Unlike</button>
+                            </form>
+                        {% else %}
+                            <form method="POST" action="{{ url_for('like', photo_id=photo._id) }}" class="like-form">
+                                <button type="submit" class="btn btn-outline-primary">Like</button>
+                            </form>
+                        {% endif %}
+                    {% else %}
+                        <p><a href="{{ url_for('login') }}">Inicia sesión</a> para dar like.</p>
+                    {% endif %}
+                    
+                    <button class="btn btn-outline-secondary toggle-comments">Ver comentarios</button>
+                    <div class="comments-section" style="display: none;">
+                        <h6>Comentarios</h6>
+                        {% for comment in photo.comments %}
+                            <p><strong>{{ comment.username }}</strong>: {{ comment.comment }}</p>
+                        {% endfor %}
+                        {% if 'username' in session %}
+                            <form method="POST" action="{{ url_for('comment', photo_id=photo._id) }}">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="comment" placeholder="Añadir un comentario" required>
+                                </div>
+                                <button type="submit" class="btn btn-outline-secondary">Comentar</button>
+                            </form>
+                        {% else %}
+                            <p><a href="{{ url_for('login') }}">Inicia sesión</a> para comentar.</p>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-{% endfor %}
+    {% endfor %}
+</div>
+
 {% if session.username == username %}
     <form method="POST" action="{{ url_for('delete_profile', username=username) }}">
         <button type="submit" class="btn btn-danger">Eliminar perfil</button>

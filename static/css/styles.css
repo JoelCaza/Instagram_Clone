@@ -227,3 +227,63 @@ form {
         transform: scale(1);
     }
 }
+/* styles.css */
+
+/* Estilo adicional para las tarjetas */
+.card {
+    border: 1px solid #dee2e6; /* Borde de las tarjetas */
+    border-radius: 5px; /* Borde redondeado */
+    margin-bottom: 20px; /* Espacio entre tarjetas */
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px; /* Borde redondeado para las imágenes */
+}
+
+.card-text {
+    color: #555;
+}
+
+.like-count {
+    font-weight: bold;
+    color: #007bff; /* Color del contador de likes */
+}
+
+.toggle-comments {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.comments-section {
+    margin-top: 10px;
+}
+
+/* Ajuste para pantallas medianas */
+@media (max-width: 992px) {
+    .card {
+        margin-bottom: 15px; /* Espacio entre tarjetas en pantallas medianas */
+    }
+}
+
+/* Ajuste para pantallas pequeñas */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 10px; /* Espacio entre tarjetas en pantallas pequeñas */
+    }
+}
+
+/* Añade cualquier otro estilo personalizado según tus necesidades */
+.card-body {
+    height: 100%; /* Ocupa toda la altura de la tarjeta */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}

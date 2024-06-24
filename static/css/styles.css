@@ -168,15 +168,62 @@ form {
     text-align: center;
 }
 
-.profile-image {
-    width: 100px; /* Ajusta el tamaño de las imágenes de perfil */
-    height: 100px; /* Ajusta el tamaño de las imágenes de perfil */
-    border-radius: 50%; /* Hace las imágenes redondas */
-    margin-bottom: 10px; /* Espacio entre la imagen y el nombre */
-}
+
 
 .profile-name {
     margin: 0;
     font-size: 14px;
     color: #262626;
+}
+
+/* styles.css */
+
+/* ...resto del CSS... */
+
+.instagram-border {
+    border: 50px solid; /* Define el ancho del borde */
+    border-image: linear-gradient(to bottom right, #f09433, #e6683c, #dc2743, #cc2366, #bc1888) 1; /* Gradiente de Instagram */
+}
+
+.silueta-image {
+    width: 30px;   /* Ajusta el tamaño según tus necesidades */
+    height: 30px;  /* Asegúrate de que el alto sea igual al ancho para que sea redonda */
+    border-radius: 50%;  /* Hace la imagen redonda */
+    vertical-align: middle;  /* Alinea verticalmente con el texto */
+    margin-right: 5px;  /* Espacio entre la imagen y el texto */
+    object-fit: cover;  /* Ajusta la imagen para cubrir completamente el área de visualización */
+}
+
+.profile-image {
+    width: 100px; /* Ajusta el tamaño de las imágenes de perfil */
+    height: 100px; /* Ajusta el tamaño de las imágenes de perfil */
+    border-radius: 50%; /* Hace las imágenes redondas */
+    margin-bottom: 10px; /* Espacio entre la imagen y el nombre */
+    object-fit: cover; /* Ajusta la imagen para cubrir completamente el área de visualización */
+}
+
+/* styles.css */
+
+/* ...resto del CSS... */
+
+/* Añadir este CSS para la animación del botón de Like */
+/* styles.css */
+
+/* Estilos existentes */
+
+/* Animación del botón de "like" */
+.btn-like.liked {
+    animation: like-animation 0.5s ease-in-out;
+}
+
+@keyframes like-animation {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
 }

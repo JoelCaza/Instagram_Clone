@@ -183,3 +183,11 @@ def delete_profile(username):
     session.pop('username', None)
     flash('Perfil eliminado correctamente', 'success')
     return redirect(url_for('home'))
+
+@app.route('/perfil/<username>', methods=['GET'])
+def vista_usuario(username):
+    # Obtener los datos necesarios para la vista de usuario
+    posts = list(photos_collection.find({'author': username}))  # Obtener las fotos del usuario
+    users = list(users_collection.find().limit(6))  # Ejemplo de obtención de usuarios
+
+    return render_template('vista_user.html', posts=posts, users=users, convert_image_to_base64=convert_image_to_base64)

@@ -9,16 +9,16 @@
     <div class="row">
         <div class="col-md-8">
             <h2>Publicaciones Recientes</h2>
-            <!-- Aquí puedes colocar tu contenido actual de publicaciones o cualquier otro contenido -->
-            {% for post in posts %}
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ post.title }}</h5>
-                        <p class="card-text">{{ post.content }}</p>
-                        <p class="card-text"><small class="text-muted">Publicado por {{ post.author }} el {{ post.timestamp }}</small></p>
-                    </div>
+            <div class="card mb-3">
+                
+                <p class="card-text"> <img src="{{ url_for('static', filename='js/img/alisson.jpg') }}" class="silueta-image" alt="Silueta"> Alisson Castillo.</p>
+                <img src="{{ url_for('static', filename='js/img/acapulco.jpg') }}" class="card-img-top" alt="Imagen Adicional">
+                <div class="card-body">
+                    <h5 class="card-title">Acapulco</h5>
+                    <p class="card-text">Las mejores vacaciones.</p>
+                    <p class="card-text"><small class="text-muted">Publicado el 2023-10-03{{ current_date }}</small></p>
                 </div>
-            {% endfor %}
+            </div>
         </div>
         <div class="col-md-4">
             <h2>Lista de amigos</h2>

@@ -8,22 +8,25 @@
 <div class="container">
     <div class="row">
         <div class="col-md-8">
-            <h2>Publicaciones Recientes</h2>
-            <!-- Aquí puedes colocar tu contenido actual de publicaciones o cualquier otro contenido -->
-            
-            {% for post in posts %}
-                <div class="card mb-3">
-                    <img src="{{ url_for('static', filename=post.image) }}" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ post.title }}</h5>
-                        <p class="card-text">{{ post.content }}</p>
-                        <p class="card-text"><small class="text-muted">Publicado por {{ post.author }} el {{ post.timestamp }}</small></p>
-                    </div>
+            <h2></h2>
+            <!-- Publicaciones Recientes -->
+            <!-- Imagen Adicional -->
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <img src="{{ url_for('static', filename='js/img/celulares.png') }}" class="card-img-top" alt="Imagen Adicional">
+                <div class="card-body">
+                    <h5 class="card-title">Título de la Imagen Adicional</h5>
+                    <p class="card-text">Descripción breve de la imagen adicional.</p>
+                    <p class="card-text"><small class="text-muted">Publicado el {{ current_date }}</small></p>
                 </div>
-            {% endfor %}
+            </div>
+        </div>
+    </div>
         </div>
         <div class="col-md-4">
             <h2>Perfiles de Usuarios</h2>
+            <!-- Perfiles de Usuarios -->
             <ul class="profiles-list">
                 {% for user in users %}
                     <li>
@@ -36,5 +39,7 @@
             </ul>
         </div>
     </div>
+
+    
 </div>
 {% endblock %}

@@ -9,6 +9,14 @@
     <a href="{{ url_for('upload') }}" class="btn btn-primary">Subir Foto</a>
 {% endif %}
 
+<div class="profile-image">
+    {% if user.profile_image %}
+        <img src="data:image/jpeg;base64,{{ user.profile_image }}" alt="Profile Image" class="profile-image">
+    {% else %}
+        <img src="{{ url_for('static', filename='js/img/default_profile.png') }}" alt="Profile Image" class="profile-image">
+    {% endif %}
+</div>
+
 <h3>Fotos</h3>
 <div class="row">
     {% for photo in photos %}
@@ -20,12 +28,12 @@
 
                     <p class="card-text">Likes: <span class="like-count">{{ photo.likes|length }}</span></p>
                     {% if session.username %}
-                        {% if session.username in photo.likes_users %}
-                            <form method="POST" action="{{ url_for('unlike', photo_id=photo._id) }}" class="like-form">
+                        {% if session.username in photo.likes %}
+                            <form method="POST" action="{{ url_for('unlike', photo_id=str(photo._id)) }}" class="like-form">
                                 <button type="submit" class="btn btn-outline-primary">Unlike</button>
                             </form>
                         {% else %}
-                            <form method="POST" action="{{ url_for('like', photo_id=photo._id) }}" class="like-form">
+                            <form method="POST" action="{{ url_for('like', photo_id=str(photo._id)) }}" class="like-form">
                                 <button type="submit" class="btn btn-outline-primary">Like</button>
                             </form>
                         {% endif %}
@@ -40,7 +48,7 @@
                             <p><strong>{{ comment.username }}</strong>: {{ comment.comment }}</p>
                         {% endfor %}
                         {% if 'username' in session %}
-                            <form method="POST" action="{{ url_for('comment', photo_id=photo._id) }}">
+                            <form method="POST" action="{{ url_for('comment', photo_id=str(photo._id)) }}">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="comment" placeholder="Añadir un comentario" required>
                                 </div>

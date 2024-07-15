@@ -16,28 +16,43 @@ photos_collection = db['photos']
 @app.route('/')
 def home():
     users = list(users_collection.find())
-    return render_template('home.html', users=users)
+    top_photo = photos_collection.find_one(sort=[("likes", -1)])
+    return render_template('home.html', users=users, top_photo=top_photo, convert_image_to_base64=convert_image_to_base64)
+    return render_template('vista_user.html')
+
+
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        profile_image = request.files['profile_image']
 
         if users_collection.find_one({'username': username}):
             flash('El usuario ya existe', 'danger')
             return redirect(url_for('register'))
 
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        
+        if profile_image:
+            profile_image_data = profile_image.read()
+            profile_image_base64 = convert_image_to_base64(profile_image_data)
+        else:
+            profile_image_base64 = None
+
         users_collection.insert_one({
             'username': username,
-            'password': hashed_password
+            'password': hashed_password,
+            'profile_image': profile_image_base64
         })
 
         flash('Usuario registrado con éxito', 'success')
         return redirect(url_for('login'))
     
     return render_template('register.html')
+
 
 # app.py
 
@@ -60,7 +75,7 @@ def login():
             return render_template('vista_user.html', posts=posts, users=users)
 
         flash('Usuario o contraseña incorrectos', 'danger')
-        return redirect(url_for('login'))
+        
 
     # Si es un GET, mostrar el formulario de login
     return render_template('login.html')
@@ -97,16 +112,17 @@ def upload():
 
     return render_template('upload.html')
 
-@app.route('/profile/<username>')
+@app.route('/profile/<username>', methods=['GET'])
 def profile(username):
     user = users_collection.find_one({'username': username})
     if not user:
         flash('Usuario no encontrado', 'danger')
         return redirect(url_for('home'))
-
+    
     photos = list(photos_collection.find({'username': username}))
+    
+    return render_template('profile.html', username=username, user=user, photos=photos, convert_image_to_base64=convert_image_to_base64, str=str)
 
-    return render_template('profile.html', username=username, photos=photos,convert_image_to_base64=convert_image_to_base64)
 
 @app.route('/like/<photo_id>', methods=['POST'])
 def like(photo_id):
@@ -191,3 +207,23 @@ def vista_usuario(username):
     users = list(users_collection.find().limit(6))  # Ejemplo de obtención de usuarios
 
     return render_template('vista_user.html', posts=posts, users=users, convert_image_to_base64=convert_image_to_base64)
+
+
+@app.route('/unlike/<photo_id>', methods=['POST'])
+def unlike(photo_id):
+    if 'username' not in session:
+        flash('Debes iniciar sesión para quitar el like', 'danger')
+        return redirect(url_for('login'))
+
+    photo = photos_collection.find_one({'_id': ObjectId(photo_id)})
+    if not photo:
+        flash('Foto no encontrada', 'danger')
+        return redirect(url_for('home'))
+
+    if session['username'] in photo['likes']:
+        photos_collection.update_one({'_id': ObjectId(photo_id)}, {'$pull': {'likes': session['username']}})
+        flash('Like removido', 'success')
+    else:
+        flash('No has dado like a esta foto', 'info')
+
+    return redirect(url_for('profile', username=photo['username']))

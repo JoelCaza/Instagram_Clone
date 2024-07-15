@@ -1,5 +1,3 @@
-<!-- home.html -->
-
 {% extends "base.html" %}
 
 {% block title %}Inicio{% endblock %}
@@ -11,18 +9,18 @@
             <h2></h2>
             <!-- Publicaciones Recientes -->
             <!-- Imagen Adicional -->
-    <div class="row mt-4">
-        <div class="col-md-8">
-            <div class="card mb-3">
-                <img src="{{ url_for('static', filename='js/img/celulares.png') }}" class="card-img-top" alt="Imagen Adicional">
-                <div class="card-body">
-                    <h5 class="card-title">Título de la Imagen Adicional</h5>
-                    <p class="card-text">Descripción breve de la imagen adicional.</p>
-                    <p class="card-text"><small class="text-muted">Publicado el {{ current_date }}</small></p>
+            <div class="row mt-4">
+                <div class="col-md-8">
+                    <div class="card mb-3">
+                        <img src="{{ url_for('static', filename='js/img/celulares.png') }}" class="card-img-top" alt="Imagen Adicional">
+                        <div class="card-body">
+                            <h5 class="card-title">Título de la Imagen Adicional</h5>
+                            <p class="card-text">Descripción breve de la imagen adicional.</p>
+                            <p class="card-text"><small class="text-muted">Publicado el {{ current_date }}</small></p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
         </div>
         <div class="col-md-4">
             <h2>Perfiles de Usuarios</h2>
@@ -31,15 +29,32 @@
                 {% for user in users %}
                     <li>
                         <a href="{{ url_for('profile', username=user.username) }}">
-                            <img src="{{ url_for('static', filename='js/img/images.png') }}" alt="Profile Image" class="profile-image">
+                            {% if user.profile_image %}
+                                <img src="data:image/jpeg;base64,{{ user.profile_image }}" alt="Profile Image" class="profile-image">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='js/img/default_profile.png') }}" alt="Profile Image" class="profile-image">
+                            {% endif %}
                             <p class="profile-name">{{ user.username }}</p>
                         </a>
                     </li>
                 {% endfor %}
             </ul>
+
+            <!-- Foto con más likes -->
+            {% if top_photo %}
+                <div class="top-photo mt-4">
+                    <h3>Foto con más likes</h3>
+                    <div class="card">
+                        <img src="data:image/jpeg;base64,{{ convert_image_to_base64(top_photo.image) }}" class="card-img-top" alt="{{ top_photo.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ top_photo.title }}</h5>
+                            <p class="card-text">Likes: {{ top_photo.likes | length }}</p>
+                            <p class="card-text">Subido por: {{ top_photo.username }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
-
-    
 </div>
 {% endblock %}

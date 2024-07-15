@@ -27,7 +27,11 @@
                 {% for user in users %}
                     <li>
                         <a href="{{ url_for('profile', username=user.username) }}">
-                            <img src="{{ url_for('static', filename='js/img/images.png') }}" alt="Profile Image" class="profile-image">
+                            {% if user.profile_image %}
+                                <img src="data:image/jpeg;base64,{{ user.profile_image }}" alt="Profile Image" class="profile-image">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='js/img/default_profile.png') }}" alt="Profile Image" class="profile-image">
+                            {% endif %}
                             <p class="profile-name">{{ user.username }}</p>
                         </a>
                     </li>

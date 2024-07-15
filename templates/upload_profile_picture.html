@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Subir Foto de Perfil{% endblock %}
+
+{% block content %}
+<h2>Subir Foto de Perfil</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="file">Elige una foto de perfil</label>
+        <input type="file" class="form-control" id="file" name="file" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Subir</button>
+</form>
+
+{% endblock %}

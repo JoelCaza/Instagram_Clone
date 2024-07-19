@@ -1,43 +1,185 @@
-<!-- home.html -->
-
-{% extends "base.html" %}
-
-{% block title %}Inicio{% endblock %}
-
-{% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-8">
-            <h2>Publicaciones Recientes</h2>
-            <div class="card mb-3">
-                
-                <p class="card-text"> <img src="{{ url_for('static', filename='js/img/alisson.jpg') }}" class="silueta-image" alt="Silueta"> Alisson Castillo.</p>
-                <img src="{{ url_for('static', filename='js/img/acapulco.jpg') }}" class="card-img-top" alt="Imagen Adicional">
-                <div class="card-body">
-                    <h5 class="card-title">Acapulco</h5>
-                    <p class="card-text">Las mejores vacaciones.</p>
-                    <p class="card-text"><small class="text-muted">Publicado el 2023-10-03{{ current_date }}</small></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <h2>Lista de amigos</h2>
-            
-            <ul class="profiles-list">
-                {% for user in users %}
-                    <li>
-                        <a href="{{ url_for('profile', username=user.username) }}">
-                            {% if user.profile_image %}
-                                <img src="data:image/jpeg;base64,{{ user.profile_image }}" alt="Profile Image" class="profile-image">
-                            {% else %}
-                                <img src="{{ url_for('static', filename='js/img/default_profile.png') }}" alt="Profile Image" class="profile-image">
-                            {% endif %}
-                            <p class="profile-name">{{ user.username }}</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inicio</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #fafafa;
+        }
+        .navbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid #dbdbdb;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-family: 'Grand Hotel', cursive;
+            color: #262626;
+        }
+        .navbar-nav .nav-link {
+            color: #262626;
+            font-size: 1.1rem;
+            margin-left: 15px;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card img {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            object-fit: cover;
+            max-height: 400px;
+        }
+        .profile-image, .silueta-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+        .profiles-list {
+            list-style: none;
+            padding: 0;
+        }
+        .profiles-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .profiles-list li:hover {
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        .profiles-list .profile-name {
+            margin: 0;
+        }
+        .top-photo .card {
+            margin-top: 20px;
+        }
+        .top-photo .card img {
+            border-radius: 5px;
+        }
+        .card-title, .card-text {
+            color: #262626;
+        }
+        .card-text small {
+            color: #999999;
+        }
+        .live-chat-button {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .live-chat-button a {
+            color: #ffffff;
+            background-color: #0095f6;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .live-chat-button a:hover {
+            background-color: #007bb5;
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home') }}">Instagram Clone</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('chat') }}">
+                            <i class="fas fa-comments"></i> Mensajes
                         </a>
                     </li>
-                {% endfor %}
-            </ul>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('profile', username=session['username']) }}">
+                            <i class="fas fa-user"></i> {{ session['username'] }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <div class="row">
+            <div class="col-md-8">
+                <h2>Publicaciones Recientes</h2>
+                <div class="card mb-3">
+                    <p class="card-text">
+                        <img src="{{ url_for('static', filename='js/img/alisson.jpg') }}" class="silueta-image" alt="Silueta">
+                        Alisson Castillo
+                    </p>
+                    <img src="{{ url_for('static', filename='js/img/acapulco.jpg') }}" class="card-img-top" alt="Imagen Adicional">
+                    <div class="card-body">
+                        <h5 class="card-title">Acapulco</h5>
+                        <p class="card-text">Las mejores vacaciones.</p>
+                        <p class="card-text"><small class="text-muted">Publicado el 2023-10-03 {{ current_date }}</small></p>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="col-md-4">
+                <h2>Lista de amigos</h2>
+                <ul class="profiles-list">
+                    {% for user in users %}
+                        <li>
+                            <a href="{{ url_for('profile', username=user.username) }}">
+                                {% if user.profile_image %}
+                                    <img src="data:image/jpeg;base64,{{ user.profile_image }}" alt="Profile Image" class="profile-image">
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='js/img/default_profile.png') }}" alt="Profile Image" class="profile-image">
+                                {% endif %}
+                                <p class="profile-name">{{ user.username }}</p>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% if top_photo %}
+                    <div class="top-photo">
+                        <h3>Foto con más likes</h3>
+                        <div class="card">
+                            <img src="data:image/jpeg;base64,{{ convert_image_to_base64(top_photo.image) }}" class="card-img-top" alt="{{ top_photo.title }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ top_photo.title }}</h5>
+                                <p class="card-text">Likes: {{ top_photo.likes | length }}</p>
+                                <p class="card-text">Subido por: {{ top_photo.username }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
-</div>
-{% endblock %}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

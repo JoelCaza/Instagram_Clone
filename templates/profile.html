@@ -1,73 +1,137 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil de {{ username }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #fafafa;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .profile-header img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+        .profile-header h2 {
+            margin: 0;
+        }
+        .profile-header .btn {
+            margin-top: 10px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .card img {
+            object-fit: cover;
+        }
+        .like-form, .comments-section form {
+            display: inline;
+        }
+        .toggle-comments {
+            margin-top: 10px;
+        }
+        .comments-section {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    {% extends "base.html" %}
 
-{% block title %}Perfil de {{ username }}{% endblock %}
+    {% block title %}Perfil de {{ username }}{% endblock %}
 
-{% block content %}
-<h2>Perfil de {{ username }}</h2>
-
-{% if session.username == username %}
-    <a href="{{ url_for('upload') }}" class="btn btn-primary">Subir Foto</a>
-{% endif %}
-
-<div class="profile-image">
-    {% if user.profile_image %}
-        <img src="data:image/jpeg;base64,{{ user.profile_image }}" alt="Profile Image" class="profile-image">
-    {% else %}
-        <img src="{{ url_for('static', filename='js/img/default_profile.png') }}" alt="Profile Image" class="profile-image">
-    {% endif %}
-</div>
-
-<h3>Fotos</h3>
-<div class="row">
-    {% for photo in photos %}
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">{{ photo.title }}</h5>
-                    <img src="data:image/jpeg;base64,{{ convert_image_to_base64(photo.image) }}" class="img-fluid" alt="Foto">
-
-                    <p class="card-text">Likes: <span class="like-count">{{ photo.likes|length }}</span></p>
-                    {% if session.username %}
-                        {% if session.username in photo.likes %}
-                            <form method="POST" action="{{ url_for('unlike', photo_id=str(photo._id)) }}" class="like-form">
-                                <button type="submit" class="btn btn-outline-primary">Unlike</button>
-                            </form>
-                        {% else %}
-                            <form method="POST" action="{{ url_for('like', photo_id=str(photo._id)) }}" class="like-form">
-                                <button type="submit" class="btn btn-outline-primary">Like</button>
-                            </form>
-                        {% endif %}
-                    {% else %}
-                        <p><a href="{{ url_for('login') }}">Inicia sesión</a> para dar like.</p>
-                    {% endif %}
-                    
-                    <button class="btn btn-outline-secondary toggle-comments">Ver comentarios</button>
-                    <div class="comments-section" style="display: none;">
-                        <h6>Comentarios</h6>
-                        {% for comment in photo.comments %}
-                            <p><strong>{{ comment.username }}</strong>: {{ comment.comment }}</p>
-                        {% endfor %}
-                        {% if 'username' in session %}
-                            <form method="POST" action="{{ url_for('comment', photo_id=str(photo._id)) }}">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="comment" placeholder="Añadir un comentario" required>
-                                </div>
-                                <button type="submit" class="btn btn-outline-secondary">Comentar</button>
-                            </form>
-                        {% else %}
-                            <p><a href="{{ url_for('login') }}">Inicia sesión</a> para comentar.</p>
-                        {% endif %}
-                    </div>
-                </div>
+    {% block content %}
+    <div class="container">
+        <div class="profile-header">
+            <div class="profile-image">
+                {% if user.profile_image %}
+                    <img src="data:image/jpeg;base64,{{ user.profile_image }}" alt="Profile Image">
+                {% else %}
+                    <img src="{{ url_for('static', filename='js/img/default_profile.png') }}" alt="Profile Image">
+                {% endif %}
+            </div>
+            <div>
+                <h2>{{ username }}</h2>
+                {% if session.username == username %}
+                    <a href="{{ url_for('upload') }}" class="btn btn-primary">Subir Foto</a>
+                {% endif %}
             </div>
         </div>
-    {% endfor %}
-</div>
 
-{% if session.username == username %}
-    <form method="POST" action="{{ url_for('delete_profile', username=username) }}">
-        <button type="submit" class="btn btn-danger">Eliminar perfil</button>
-    </form>
-{% endif %}
+        <h3>Fotos</h3>
+        <div class="row">
+            {% for photo in photos %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card">
+                        <img src="data:image/jpeg;base64,{{ convert_image_to_base64(photo.image) }}" class="card-img-top" alt="Foto">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ photo.title }}</h5>
+                            <p class="card-text">Likes: <span class="like-count">{{ photo.likes|length }}</span></p>
+                            {% if session.username %}
+                                {% if session.username in photo.likes %}
+                                    <form method="POST" action="{{ url_for('unlike', photo_id=str(photo._id)) }}" class="like-form">
+                                        <button type="submit" class="btn btn-outline-primary"><i class="fas fa-thumbs-down"></i> Unlike</button>
+                                    </form>
+                                {% else %}
+                                    <form method="POST" action="{{ url_for('like', photo_id=str(photo._id)) }}" class="like-form">
+                                        <button type="submit" class="btn btn-outline-primary"><i class="fas fa-thumbs-up"></i> Like</button>
+                                    </form>
+                                {% endif %}
+                            {% else %}
+                                <p><a href="{{ url_for('login') }}">Inicia sesión</a> para dar like.</p>
+                            {% endif %}
+                            
+                            <button class="btn btn-outline-secondary toggle-comments">Ver comentarios</button>
+                            <div class="comments-section" style="display: none;">
+                                <h6>Comentarios</h6>
+                                {% for comment in photo.comments %}
+                                    <p><strong>{{ comment.username }}</strong>: {{ comment.comment }}</p>
+                                {% endfor %}
+                                {% if 'username' in session %}
+                                    <form method="POST" action="{{ url_for('comment', photo_id=str(photo._id)) }}">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" name="comment" placeholder="Añadir un comentario" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-outline-secondary">Comentar</button>
+                                    </form>
+                                {% else %}
+                                    <p><a href="{{ url_for('login') }}">Inicia sesión</a> para comentar.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
 
-{% endblock %}
+        {% if session.username == username %}
+            <form method="POST" action="{{ url_for('delete_profile', username=username) }}">
+                <button type="submit" class="btn btn-danger">Eliminar perfil</button>
+            </form>
+        {% endif %}
+    </div>
+    {% endblock %}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.toggle-comments').click(function() {
+                $(this).next('.comments-section').toggle();
+            });
+        });
+    </script>
+</body>
+</html>

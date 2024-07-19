@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fafafa;
+        }
+        .chat-container {
+            max-width: 900px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .chat-header {
+            background-color: #fff;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e6e6e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-header h5 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .chat-body {
+            display: flex;
+            height: 600px;
+        }
+        .user-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 30%;
+            border-right: 1px solid #e6e6e6;
+            overflow-y: auto;
+            background-color: #fff;
+        }
+        .user-list li {
+            padding: 15px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid #e6e6e6;
+            display: flex;
+            align-items: center;
+        }
+        .user-list li:hover, .user-list li.active {
+            background-color: #f0f0f0;
+        }
+        .user-list li img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+        }
+        .chat-box {
+            width: 70%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        .chat-message {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-message.sent {
+            align-items: flex-end;
+        }
+        .chat-message.received {
+            align-items: flex-start;
+        }
+        .chat-message .message-content {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            position: relative;
+        }
+        .chat-message.sent .message-content {
+            background-color: #dcf8c6;
+        }
+        .chat-message.received .message-content {
+            background-color: #f1f0f0;
+            border: 1px solid #e6e6e6;
+        }
+        .message-meta {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 5px;
+        }
+        .input-group {
+            border-top: 1px solid #e6e6e6;
+            padding-top: 10px;
+        }
+        .input-group input {
+            border-radius: 20px;
+        }
+        .input-group button {
+            border-radius: 20px;
+        }
+        .back-button {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: #000;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h5><i class="fas fa-comments"></i> Chat</h5>
+            <button class="back-button" onclick="window.location.href='{{ url_for('home') }}'"><i class="fas fa-arrow-left"></i> Regresar</button>
+        </div>
+        <div class="chat-body">
+            <ul class="user-list">
+                {% for user in users %}
+                    <li class="user-item" onclick="selectUser('{{ user.username }}')">
+                        <img src="{{ url_for('static', filename='js/img/default_profile.png') }}" alt="Profile Image">
+                        <span>{{ user.username }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="chat-box">
+                <div id="chat-messages" class="chat-messages">
+                    <!-- Mensajes se cargarán aquí -->
+                </div>
+                <div class="input-group">
+                    <input type="text" id="message" class="form-control" placeholder="Escribe tu mensaje aquí...">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" onclick="sendPrivateMessage()"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        const username = "{{ username }}";
+        let selectedUser = localStorage.getItem('selectedUser');
+
+        socket.on('connect', () => {
+            console.log('Connected');
+            if (selectedUser) {
+                loadMessages(selectedUser);
+                document.querySelectorAll('.user-item').forEach(item => {
+                    if (item.querySelector('span').textContent === selectedUser) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+        });
+
+        socket.on('private_message', (data) => {
+            if (data.sender === selectedUser || data.recipient === selectedUser) {
+                $('#chat-messages').append(
+                    `<div class="chat-message ${data.sender === username ? 'sent' : 'received'}">
+                        <div class="message-content">
+                            <div class="message-text">${data.message}</div>
+                            <div class="message-meta">${data.sender}</div>
+                        </div>
+                    </div>`
+                );
+                $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
+            }
+        });
+
+        function selectUser(user) {
+            selectedUser = user;
+            localStorage.setItem('selectedUser', user);
+            document.querySelectorAll('.user-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.querySelector('span').textContent === user) {
+                    item.classList.add('active');
+                }
+            });
+            $('#chat-messages').empty();
+            loadMessages(user);
+        }
+
+        function sendPrivateMessage() {
+            if (!selectedUser) {
+                alert('Select a user to chat with');
+                return;
+            }
+            const msg = $('#message').val();
+            socket.emit('private_message', {recipient: selectedUser, message: msg});
+            $('#message').val('');
+        }
+
+        function loadMessages(user) {
+            $.get('/get_messages/' + user, function(data) {
+                data.messages.forEach(function(msg) {
+                    $('#chat-messages').append(
+                        `<div class="chat-message ${msg.sender === username ? 'sent' : 'received'}">
+                            <div class="message-content">
+                                <div class="message-text">${msg.message}</div>
+                                <div class="message-meta">${msg.sender}</div>
+                            </div>
+                        </div>`
+                    );
+                });
+                $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
+            });
+        }
+
+        $(document).ready(function() {
+            if (selectedUser) {
+                loadMessages(selectedUser);
+            }
+        });
+    </script>
+</body>
+</html>

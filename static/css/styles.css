@@ -117,6 +117,7 @@ h1, h2, h3, h4, h5, h6 {
     border: 1px solid #dbdbdb;
     border-radius: 5px;
     margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .card-title {
@@ -125,8 +126,19 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 10px;
 }
 
+.card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px 5px 0 0;
+}
+
+.card-text {
+    color: #555;
+}
+
 .img-fluid {
     max-width: 100%;
+    height: auto;
     border-radius: 5px;
 }
 
@@ -151,24 +163,20 @@ form {
     padding: 20px;
     margin-bottom: 20px;
 }
-.img-fluid {
-    max-width: 100%; /* Ajusta el tamaño máximo del ancho */
-    max-height: 300px; /* Establece un tamaño máximo de altura, ajustable según tus necesidades */
-    border-radius: 5px;
-}
-/* En styles.css */
+
 .profiles-list {
     list-style: none;
     padding: 0;
     display: flex;
-    justify-content: space-around; /* Ajusta el espacio entre perfiles */
+    flex-wrap: wrap;
+    justify-content: space-around;
 }
 
 .profiles-list li {
     text-align: center;
+    margin-bottom: 20px;
+    width: 100px; /* Ajusta según tus necesidades */
 }
-
-
 
 .profile-name {
     margin: 0;
@@ -176,40 +184,27 @@ form {
     color: #262626;
 }
 
-/* styles.css */
-
-/* ...resto del CSS... */
-
 .instagram-border {
-    border: 50px solid; /* Define el ancho del borde */
-    border-image: linear-gradient(to bottom right, #f09433, #e6683c, #dc2743, #cc2366, #bc1888) 1; /* Gradiente de Instagram */
+    border: 50px solid;
+    border-image: linear-gradient(to bottom right, #f09433, #e6683c, #dc2743, #cc2366, #bc1888) 1;
 }
 
 .silueta-image {
-    width: 30px;   /* Ajusta el tamaño según tus necesidades */
-    height: 30px;  /* Asegúrate de que el alto sea igual al ancho para que sea redonda */
-    border-radius: 50%;  /* Hace la imagen redonda */
-    vertical-align: middle;  /* Alinea verticalmente con el texto */
-    margin-right: 5px;  /* Espacio entre la imagen y el texto */
-    object-fit: cover;  /* Ajusta la imagen para cubrir completamente el área de visualización */
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 5px;
+    object-fit: cover;
 }
 
 .profile-image {
-    width: 100px; /* Ajusta el tamaño de las imágenes de perfil */
-    height: 100px; /* Ajusta el tamaño de las imágenes de perfil */
-    border-radius: 50%; /* Hace las imágenes redondas */
-    margin-bottom: 10px; /* Espacio entre la imagen y el nombre */
-    object-fit: cover; /* Ajusta la imagen para cubrir completamente el área de visualización */
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    object-fit: cover;
 }
-
-/* styles.css */
-
-/* ...resto del CSS... */
-
-/* Añadir este CSS para la animación del botón de Like */
-/* styles.css */
-
-/* Estilos existentes */
 
 /* Animación del botón de "like" */
 .btn-like.liked {
@@ -227,34 +222,10 @@ form {
         transform: scale(1);
     }
 }
-/* styles.css */
-
-/* Estilo adicional para las tarjetas */
-.card {
-    border: 1px solid #dee2e6; /* Borde de las tarjetas */
-    border-radius: 5px; /* Borde redondeado */
-    margin-bottom: 20px; /* Espacio entre tarjetas */
-}
-
-.card-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.card img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 5px; /* Borde redondeado para las imágenes */
-}
-
-.card-text {
-    color: #555;
-}
 
 .like-count {
     font-weight: bold;
-    color: #007bff; /* Color del contador de likes */
+    color: #007bff;
 }
 
 .toggle-comments {
@@ -269,20 +240,18 @@ form {
 /* Ajuste para pantallas medianas */
 @media (max-width: 992px) {
     .card {
-        margin-bottom: 15px; /* Espacio entre tarjetas en pantallas medianas */
+        margin-bottom: 15px;
     }
 }
 
 /* Ajuste para pantallas pequeñas */
 @media (max-width: 768px) {
     .card {
-        margin-bottom: 10px; /* Espacio entre tarjetas en pantallas pequeñas */
+        margin-bottom: 10px;
     }
 }
 
-/* Añade cualquier otro estilo personalizado según tus necesidades */
 .card-body {
-    height: 100%; /* Ocupa toda la altura de la tarjeta */
     display: flex;
     flex-direction: column;
     justify-content: space-between;

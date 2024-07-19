@@ -3,14 +3,12 @@
 {% block title %}Inicio{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-4">
     <div class="row">
         <div class="col-md-8">
-            <h2></h2>
-            <!-- Publicaciones Recientes -->
-            <!-- Imagen Adicional -->
+            <h2>Publicaciones Recientes</h2>
             <div class="row mt-4">
-                <div class="col-md-8">
+                <div class="col-md-12">
                     <div class="card mb-3">
                         <img src="{{ url_for('static', filename='js/img/celulares.png') }}" class="card-img-top" alt="Imagen Adicional">
                         <div class="card-body">
@@ -24,23 +22,22 @@
         </div>
         <div class="col-md-4">
             <h2>Perfiles de Usuarios</h2>
-            <!-- Perfiles de Usuarios -->
-            <ul class="profiles-list">
+            <ul class="profiles-list list-unstyled">
                 {% for user in users %}
-                    <li>
+                    <li class="media mb-3">
                         <a href="{{ url_for('profile', username=user.username) }}">
                             {% if user.profile_image %}
-                                <img src="data:image/jpeg;base64,{{ user.profile_image }}" alt="Profile Image" class="profile-image">
+                                <img src="data:image/jpeg;base64,{{ user.profile_image }}" alt="Profile Image" class="mr-3 rounded-circle profile-image">
                             {% else %}
-                                <img src="{{ url_for('static', filename='js/img/default_profile.png') }}" alt="Profile Image" class="profile-image">
+                                <img src="{{ url_for('static', filename='js/img/default_profile.png') }}" alt="Profile Image" class="mr-3 rounded-circle profile-image">
                             {% endif %}
-                            <p class="profile-name">{{ user.username }}</p>
+                            <div class="media-body">
+                                <h5 class="mt-0 mb-1 profile-name">{{ user.username }}</h5>
+                            </div>
                         </a>
                     </li>
                 {% endfor %}
             </ul>
-
-            <!-- Foto con más likes -->
             {% if top_photo %}
                 <div class="top-photo mt-4">
                     <h3>Foto con más likes</h3>
@@ -57,4 +54,60 @@
         </div>
     </div>
 </div>
+
+<style>
+    body {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        background-color: #fafafa;
+    }
+    .navbar {
+        background-color: #ffffff;
+        border-bottom: 1px solid #dbdbdb;
+    }
+    .navbar-brand {
+        font-weight: bold;
+        font-family: 'Grand Hotel', cursive;
+        color: #262626;
+    }
+    .navbar-nav .nav-link {
+        color: #262626;
+        font-size: 1.1rem;
+        margin-left: 15px;
+    }
+    .container {
+        margin-top: 20px;
+    }
+    .card {
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease-in-out;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .card img {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        object-fit: cover;
+        max-height: 400px;
+    }
+    .profile-image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+    }
+    .top-photo .card {
+        margin-top: 20px;
+    }
+    .top-photo .card img {
+        border-radius: 5px;
+    }
+    .card-title, .card-text {
+        color: #262626;
+    }
+    .card-text small {
+        color: #999999;
+    }
+</style>
 {% endblock %}

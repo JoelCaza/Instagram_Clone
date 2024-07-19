@@ -1,27 +1,34 @@
+import eventlet
+eventlet.monkey_patch()
+
 from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask_socketio import SocketIO, send, emit, join_room, leave_room
 import bcrypt
 from config import get_db
 from bson.objectid import ObjectId
 import base64
 from werkzeug.security import check_password_hash
+from datetime import datetime
 
+def convert_image_to_base64(image_data):
+    return base64.b64encode(image_data).decode('utf-8')
 
 app = Flask(__name__)
 app.secret_key = '123'  # Cambia esto por una clave secreta segura
+socketio = SocketIO(app, async_mode='eventlet')  # Asegúrate de que async_mode esté configurado como 'eventlet'
 
 db = get_db()
 users_collection = db['users']
 photos_collection = db['photos']
+messages_collection = db['messages']  # Colección para almacenar los mensajes de chat
+
+users_session = {}  # Diccionario para almacenar las sesiones de los usuarios
 
 @app.route('/')
 def home():
     users = list(users_collection.find())
     top_photo = photos_collection.find_one(sort=[("likes", -1)])
     return render_template('home.html', users=users, top_photo=top_photo, convert_image_to_base64=convert_image_to_base64)
-    return render_template('vista_user.html')
-
-
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -53,9 +60,6 @@ def register():
     
     return render_template('register.html')
 
-
-# app.py
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -67,19 +71,11 @@ def login():
         if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
             session['username'] = username
             flash('Login exitoso', 'success')
-
-            # Obtener datos necesarios para la vista de usuario
-            posts = list(photos_collection.find().limit(6))  # Ejemplo de obtención de publicaciones
-            users = list(users_collection.find().limit(6))  # Ejemplo de obtención de usuarios
-
-            return render_template('vista_user.html', posts=posts, users=users)
+            return redirect(url_for('chat'))
 
         flash('Usuario o contraseña incorrectos', 'danger')
-        
 
-    # Si es un GET, mostrar el formulario de login
     return render_template('login.html')
-
 
 @app.route('/logout')
 def logout():
@@ -122,7 +118,6 @@ def profile(username):
     photos = list(photos_collection.find({'username': username}))
     
     return render_template('profile.html', username=username, user=user, photos=photos, convert_image_to_base64=convert_image_to_base64, str=str)
-
 
 @app.route('/like/<photo_id>', methods=['POST'])
 def like(photo_id):
@@ -175,14 +170,6 @@ def user_detail(username):
 
     return render_template('user_detail.html', user=user, photos=photos, convert_image_to_base64=convert_image_to_base64)
 
-if __name__ == '__main__':
-    app.run(debug=True)
-    
-import base64
-
-def convert_image_to_base64(image_data):
-    return base64.b64encode(image_data).decode('utf-8')
-
 @app.route('/delete_profile/<username>', methods=['POST'])
 def delete_profile(username):
     if 'username' not in session or session['username'] != username:
@@ -193,7 +180,6 @@ def delete_profile(username):
     users_collection.delete_one({'username': username})
     # Eliminar todas las fotos del usuario de la base de datos
     photos_collection.delete_many({'username': username})
-    # Otras acciones de limpieza si es necesario
 
     # Limpiar la sesión
     session.pop('username', None)
@@ -202,12 +188,10 @@ def delete_profile(username):
 
 @app.route('/perfil/<username>', methods=['GET'])
 def vista_usuario(username):
-    # Obtener los datos necesarios para la vista de usuario
     posts = list(photos_collection.find({'author': username}))  # Obtener las fotos del usuario
     users = list(users_collection.find().limit(6))  # Ejemplo de obtención de usuarios
 
     return render_template('vista_user.html', posts=posts, users=users, convert_image_to_base64=convert_image_to_base64)
-
 
 @app.route('/unlike/<photo_id>', methods=['POST'])
 def unlike(photo_id):
@@ -227,3 +211,64 @@ def unlike(photo_id):
         flash('No has dado like a esta foto', 'info')
 
     return redirect(url_for('profile', username=photo['username']))
+
+# Ruta para el chat
+@app.route('/chat')
+def chat():
+    if 'username' not in session:
+        flash('Debes iniciar sesión para acceder al chat', 'danger')
+        return redirect(url_for('login'))
+    
+    username = session['username']
+    # Obtener todos los usuarios excepto el usuario actual
+    users = list(users_collection.find({'username': {'$ne': username}}))
+    return render_template('chat.html', username=username, users=users)
+
+@socketio.on('private_message')
+def handle_private_message(data):
+    recipient = data['recipient']
+    recipient_session_id = users_session.get(recipient)
+    if recipient_session_id:
+        message = data['message']
+        sender = session['username']
+        emit('private_message', {'message': message, 'sender': sender, 'recipient': recipient}, room=recipient_session_id)
+        # Guardar el mensaje en la base de datos
+        messages_collection.insert_one({
+            'sender': sender,
+            'recipient': recipient,
+            'message': message,
+            'timestamp': datetime.utcnow()
+        })
+    # Emitir el mensaje al remitente para que también se muestre en su pantalla
+    emit('private_message', {'message': message, 'sender': sender, 'recipient': recipient}, room=request.sid)
+
+@socketio.on('connect')
+def handle_connect():
+    if 'username' in session:
+        users_session[session['username']] = request.sid
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    if 'username' in session:
+        users_session.pop(session['username'], None)
+
+@app.route('/get_messages/<recipient>', methods=['GET'])
+def get_messages(recipient):
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    username = session['username']
+    messages = list(messages_collection.find({
+        '$or': [
+            {'sender': username, 'recipient': recipient},
+            {'sender': recipient, 'recipient': username}
+        ]
+    }).sort('timestamp', 1))
+    
+    # Formatear los mensajes para que se puedan enviar al cliente
+    formatted_messages = [{'sender': msg['sender'], 'recipient': msg['recipient'], 'message': msg['message']} for msg in messages]
+
+    return {'messages': formatted_messages}
+
+if __name__ == '__main__':
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
